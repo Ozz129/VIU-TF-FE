@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Button, Input, VStack, Heading, Text, Link, Image } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: '',
     password: ''
@@ -9,7 +11,6 @@ const LoginPage = () => {
 
   const [errors, setErrors] = useState([]);
 
-  // Actualizar el estado del usuario basado en el input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUser({
@@ -18,9 +19,7 @@ const LoginPage = () => {
     });
   };
 
-  // Función para manejar el login
   const handleLogin = async () => {
-    // Validación de campos vacíos
     if (!user.username || !user.password) {
       setErrors(['Please fill in all fields.']);
       return;
@@ -36,10 +35,12 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
-
       if (response.ok) {
-        console.log('Login success:', data);
-        // Aquí puedes redireccionar al usuario o hacer algo con los datos de login
+        if (data.access_token) {
+          localStorage.setItem('token', data.access_token);
+        }
+
+        navigate('/dashboard')
       } else {
         throw new Error(data.message || 'An error occurred during login.');
       }
